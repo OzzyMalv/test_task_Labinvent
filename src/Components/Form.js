@@ -75,6 +75,8 @@ class Form extends Component {
     super(props);
     this.state = {
       data: "",
+      checkEthernetIp: "disabled",
+      checkEthernetDNS: "disabled",
       checkWifi: "disabled",
       checkWifiSec: "disabled",
       checkWifiIp: "disabled",
@@ -88,32 +90,51 @@ class Form extends Component {
   }
 
   checksFormState(ev) {
-    console.log(ev.target.name);
+    console.log(ev.target.value);
     if (ev.target.name === "enableWifi") {
       this.state.checkWifi === "disabled"
         ? this.setState({
-            checkWifi: "",
+            checkWifi: ""
             // checkWifiSec: "",
-            checkWifiIp: "",
-            checkWifiDNS: ""
           })
         : this.setState({
             checkWifi: "disabled",
-            // checkWifiSec: "disabled",
+            checkWifiSec: "disabled",
             checkWifiIp: "disabled",
             checkWifiDNS: "disabled"
           });
     }
-    debugger;
     if (ev.target.name === "checkWifiSec") {
       this.state.checkWifiSec === "disabled"
         ? this.setState({ checkWifiSec: "" })
         : this.setState({ checkWifiSec: "disabled" });
     }
-    // if (ev.target.name === "radioWifiIP")
-    // this.state.checkWifeIp === "disabled"
-    //   ? this.setState({ checkWife: "" })
-    //   : this.setState({ checkWife: "disabled" });
+    if (ev.target.value === "radioEthernetIpSET") {
+      this.setState({ checkEthernetIp: "" });
+    }
+    if (ev.target.value === "radioEthernetIpAUTO") {
+      this.setState({ checkEthernetIp: "disable" });
+    }
+
+    if (ev.target.value === "radioEthernetDnsSET") {
+      this.setState({ checkEthernetDNS: "" });
+    }
+    if (ev.target.value === "radioEthernetDnsAUTO") {
+      this.setState({ checkEthernetDNS: "disable" });
+    }
+
+    if (ev.target.value === "radioWifiIpSET") {
+      this.setState({ checkWifiIp: "" });
+    }
+    if (ev.target.value === "radioWifiIpAUTO") {
+      this.setState({ checkWifiIp: "disabled" });
+    }
+    if (ev.target.value === "radioWifiDnsSET") {
+      this.setState({ checkWifiDNS: "" });
+    }
+    if (ev.target.value === "radioWifiDnsAUTO") {
+      this.setState({ checkWifiDNS: "disabled" });
+    }
   }
 
   handleDataChange(ev) {
@@ -150,7 +171,7 @@ class Form extends Component {
       <Main onSubmit={this.handleSubmit}>
         <FormPage>
           <FormSides>
-            <fieldset className="uk-fieldset" disabled="disabled">
+            <fieldset className="uk-fieldset">
               <legend className="uk-legend uk-text-bold">
                 Ethernet Settings
               </legend>
@@ -160,6 +181,8 @@ class Form extends Component {
                     className="uk-radio"
                     type="radio"
                     name="EthernetSettingsRadioIp"
+                    value="radioEthernetIpAUTO"
+                    onClick={this.checksFormState}
                     defaultChecked
                   />{" "}
                   Obtain an IP address automatically (DHCP/BootP)
@@ -169,16 +192,18 @@ class Form extends Component {
                     className="uk-radio"
                     type="radio"
                     name="EthernetSettingsRadioIp"
+                    value="radioEthernetIpSET"
+                    onClick={this.checksFormState}
                   />{" "}
                   Use the following IP address:
                 </label>
               </RadioDivControls>
-              {/* required="true" */}
               <InputDiv className="uk-margin">
                 <PanelInput>
                   <label className="uk-form-label">
                     IP address:
                     <InputData
+                      disabled={this.state.checkEthernetIp}
                       className="uk-input"
                       name="ipAddress"
                       type="text"
@@ -199,6 +224,7 @@ class Form extends Component {
                   <label className="uk-form-label">
                     Subnet Mask:
                     <InputData
+                      disabled={this.state.checkEthernetIp}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
@@ -209,6 +235,7 @@ class Form extends Component {
                   <label className="uk-form-label">
                     Default Gateway:
                     <InputData
+                      disabled={this.state.checkEthernetIp}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
@@ -223,6 +250,8 @@ class Form extends Component {
                     className="uk-radio"
                     type="radio"
                     name="EthernetSettingsRadioDNS"
+                    value="radioEthernetDnsAUTO"
+                    onClick={this.checksFormState}
                     defaultChecked
                   />{" "}
                   Obtain DNS server address automatically
@@ -232,6 +261,8 @@ class Form extends Component {
                     className="uk-radio"
                     type="radio"
                     name="EthernetSettingsRadioDNS"
+                    value="radioEthernetDnsSET"
+                    onClick={this.checksFormState}
                   />{" "}
                   Use the following DNS server address:
                 </label>
@@ -242,6 +273,7 @@ class Form extends Component {
                   <label className="uk-form-label">
                     Preferred DNS server:
                     <InputData
+                      disabled={this.state.checkEthernetDNS}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
@@ -252,6 +284,7 @@ class Form extends Component {
                   <label className="uk-form-label">
                     Alternative DNS server:
                     <InputData
+                      disabled={this.state.checkEthernetDNS}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
@@ -323,9 +356,11 @@ class Form extends Component {
               <RadioDivControls className="uk-form-controls uk-form-controls-text">
                 <label>
                   <input
+                    disabled={this.state.checkWifi}
                     className="uk-radio"
                     type="radio"
                     name="radioWifiIP"
+                    value="radioWifiIpAUTO"
                     defaultChecked
                     onClick={this.checksFormState}
                   />{" "}
@@ -333,19 +368,22 @@ class Form extends Component {
                 </label>
                 <label>
                   <input
+                    disabled={this.state.checkWifi}
                     className="uk-radio"
                     type="radio"
                     name="radioWifiIP"
+                    value="radioWifiIpSET"
                     onClick={this.checksFormState}
                   />{" "}
                   Use the following IP address:
                 </label>
               </RadioDivControls>
-              <InputDiv className="uk-margin" disabled={this.state.checkWifeIp}>
+              <InputDiv className="uk-margin">
                 <PanelInput>
                   <label className="uk-form-label">
                     IP address:
                     <InputData
+                      disabled={this.state.checkWifiIp}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
@@ -356,6 +394,7 @@ class Form extends Component {
                   <label className="uk-form-label">
                     Subnet Mask:
                     <InputData
+                      disabled={this.state.checkWifiIp}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
@@ -366,6 +405,7 @@ class Form extends Component {
                   <label className="uk-form-label">
                     Default Gateway:
                     <InputData
+                      disabled={this.state.checkWifiIp}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
@@ -377,15 +417,25 @@ class Form extends Component {
               <RadioDivControls className="uk-form-controls uk-form-controls-text">
                 <label>
                   <input
+                    disabled={this.state.checkWifi}
                     className="uk-radio"
                     type="radio"
                     name="radioDNS"
+                    value="radioWifiDnsAUTO"
+                    onClick={this.checksFormState}
                     defaultChecked
                   />{" "}
                   Obtain DNS server address automatically
                 </label>
                 <label>
-                  <input className="uk-radio" type="radio" name="radioDNS" />{" "}
+                  <input
+                    disabled={this.state.checkWifi}
+                    className="uk-radio"
+                    type="radio"
+                    name="radioDNS"
+                    value="radioWifiDnsSET"
+                    onClick={this.checksFormState}
+                  />{" "}
                   Use the following DNS server address:
                 </label>
               </RadioDivControls>
@@ -395,6 +445,7 @@ class Form extends Component {
                   <label className="uk-form-label">
                     Preferred DNS server:
                     <InputData
+                      disabled={this.state.checkWifiDNS}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
@@ -405,6 +456,7 @@ class Form extends Component {
                   <label className="uk-form-label">
                     Alternative DNS server:
                     <InputData
+                      disabled={this.state.checkWifiDNS}
                       className="uk-input"
                       type="text"
                       placeholder="Input"
