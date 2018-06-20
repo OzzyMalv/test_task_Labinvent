@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import isIpValid from "./isIpValid";
 // import classnames from "classnames";
 import styled from "styled-components";
 
@@ -74,14 +75,16 @@ class Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: "",
+      data: {},
+      ipAddress: "",
+      subnetMask: "",
+      defaultGateway: "",
       checkEthernetIp: "disabled",
       checkEthernetDNS: "disabled",
       checkWifi: "disabled",
       checkWifiSec: "disabled",
       checkWifiIp: "disabled",
       checkWifiDNS: "disabled",
-      ipAddress: "",
       errors: {}
     };
     this.handleDataChange = this.handleDataChange.bind(this);
@@ -113,7 +116,12 @@ class Form extends Component {
       this.setState({ checkEthernetIp: "" });
     }
     if (ev.target.value === "radioEthernetIpAUTO") {
-      this.setState({ checkEthernetIp: "disable" });
+      this.setState({
+        checkEthernetIp: "disable",
+        ipAddress: "",
+        subnetMask: "",
+        defaultGateway: ""
+      });
     }
 
     if (ev.target.value === "radioEthernetDnsSET") {
@@ -157,13 +165,17 @@ class Form extends Component {
     ev.preventDefault();
     console.log("event");
     let errors = {};
+
+    if (!isIpValid(this.state.ipAddress)) {
+      console.log(isIpValid);
+      errors.ipAddress = "Ip address not correct";
+    }
     if (this.state.ipAddress === "") {
       errors.ipAddress = "Ip address can't be empty";
     }
-
     this.setState({ errors });
-    console.log(this.state.errors.ipAddress);
-    ev.target.reset();
+    console.log(this.state);
+    // ev.target.reset();
   }
 
   render() {
@@ -201,13 +213,12 @@ class Form extends Component {
               <InputDiv className="uk-margin">
                 <PanelInput>
                   <label className="uk-form-label">
-                    IP address:
+                    IP address: *
                     <InputData
                       disabled={this.state.checkEthernetIp}
                       className="uk-input"
                       name="ipAddress"
                       type="text"
-                      placeholder="Input"
                       value={this.state.ipAddress}
                       onChange={this.handleDataChange}
                     />
@@ -222,12 +233,14 @@ class Form extends Component {
                 )}
                 <PanelInput>
                   <label className="uk-form-label">
-                    Subnet Mask:
+                    Subnet Mask: *
                     <InputData
                       disabled={this.state.checkEthernetIp}
                       className="uk-input"
+                      name="subnetMask"
                       type="text"
-                      placeholder="Input"
+                      value={this.state.subnetMask}
+                      onChange={this.handleDataChange}
                     />
                   </label>
                 </PanelInput>
@@ -238,7 +251,9 @@ class Form extends Component {
                       disabled={this.state.checkEthernetIp}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
+                      name="defaultGateway"
+                      value={this.state.defaultGateway}
+                      onChange={this.handleDataChange}
                     />
                   </label>
                 </PanelInput>
@@ -271,12 +286,11 @@ class Form extends Component {
               <InputDiv className="uk-margin">
                 <PanelInput>
                   <label className="uk-form-label">
-                    Preferred DNS server:
+                    Preferred DNS server: *
                     <InputData
                       disabled={this.state.checkEthernetDNS}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
                     />
                   </label>
                 </PanelInput>
@@ -287,7 +301,6 @@ class Form extends Component {
                       disabled={this.state.checkEthernetDNS}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
                     />
                   </label>
                 </PanelInput>
@@ -313,7 +326,7 @@ class Form extends Component {
               <SelectDiv className="uk-margin">
                 <SelectInput>
                   <label className="uk-form-label">
-                    Wireless Network Name:
+                    Wireless Network Name: *
                     <SelectPanel
                       className="uk-select"
                       disabled={this.state.checkWifi}
@@ -325,7 +338,8 @@ class Form extends Component {
                     </SelectPanel>
                   </label>
                   <RefreshIcon>
-                    <div href="#1" uk-icon="icon: refresh" />
+                    {/*src="../img/refresh_icon.svg"*/}
+                    <div alt="refresh" href="#1" uk-icon="icon: refresh" />
                   </RefreshIcon>
                 </SelectInput>
               </SelectDiv>
@@ -342,12 +356,11 @@ class Form extends Component {
               <InputDiv className="uk-margin">
                 <PanelInput>
                   <label className="uk-form-label">
-                    Security Key:
+                    Security Key: *
                     <InputData
                       disabled={this.state.checkWifiSec}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
                     />
                   </label>
                 </PanelInput>
@@ -381,23 +394,21 @@ class Form extends Component {
               <InputDiv className="uk-margin">
                 <PanelInput>
                   <label className="uk-form-label">
-                    IP address:
+                    IP address: *
                     <InputData
                       disabled={this.state.checkWifiIp}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
                     />
                   </label>
                 </PanelInput>
                 <PanelInput>
                   <label className="uk-form-label">
-                    Subnet Mask:
+                    Subnet Mask: *
                     <InputData
                       disabled={this.state.checkWifiIp}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
                     />
                   </label>
                 </PanelInput>
@@ -408,7 +419,6 @@ class Form extends Component {
                       disabled={this.state.checkWifiIp}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
                     />
                   </label>
                 </PanelInput>
@@ -443,12 +453,11 @@ class Form extends Component {
               <InputDiv className="uk-margin">
                 <PanelInput>
                   <label className="uk-form-label">
-                    Preferred DNS server:
+                    Preferred DNS server: *
                     <InputData
                       disabled={this.state.checkWifiDNS}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
                     />
                   </label>
                 </PanelInput>
@@ -459,7 +468,6 @@ class Form extends Component {
                       disabled={this.state.checkWifiDNS}
                       className="uk-input"
                       type="text"
-                      placeholder="Input"
                     />
                   </label>
                 </PanelInput>
@@ -471,7 +479,7 @@ class Form extends Component {
           <ButtomCustom type="submit" className="uk-button uk-button-primary">
             Save
           </ButtomCustom>
-          <ButtomCustom className="uk-button uk-button-default">
+          <ButtomCustom type="reset" className="uk-button uk-button-default">
             Cancel
           </ButtomCustom>
         </SubmitPanel>
