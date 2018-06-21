@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import isIpValid from "./isIpValid";
+import { isIpValid } from "./isValid";
 // import classnames from "classnames";
 import styled from "styled-components";
 
@@ -77,7 +77,9 @@ class Form extends Component {
     this.state = {
       data: {},
       ipAddress: "",
+      wifiIpAddress: "",
       subnetMask: "",
+      securityKey: "",
       defaultGateway: "",
       checkEthernetIp: "disabled",
       checkEthernetDNS: "disabled",
@@ -98,7 +100,6 @@ class Form extends Component {
       this.state.checkWifi === "disabled"
         ? this.setState({
             checkWifi: ""
-            // checkWifiSec: "",
           })
         : this.setState({
             checkWifi: "disabled",
@@ -163,15 +164,25 @@ class Form extends Component {
 
   handleSubmit(ev) {
     ev.preventDefault();
-    console.log("event");
     let errors = {};
 
-    if (!isIpValid(this.state.ipAddress)) {
-      console.log(isIpValid);
-      errors.ipAddress = "Ip address not correct";
-    }
     if (this.state.ipAddress === "") {
       errors.ipAddress = "Ip address can't be empty";
+    } else if (!isIpValid(this.state.ipAddress)) {
+      errors.ipAddress = "Ip address not correct";
+    }
+    if (this.state.wifiIpAddress === "") {
+      errors.wifiIpAddress = "Ip address can't be empty";
+    } else if (!isIpValid(this.state.wifiIpAddress)) {
+      errors.wifiIpAddress = "Ip address not correct";
+    }
+    if (this.state.securityKey === "") {
+      errors.securityKey = "Security key can't be empty";
+    } else if (
+      this.state.securityKey.length <= 5 ||
+      this.state.securityKey.length >= 15
+    ) {
+      errors.securityKey = "Must be at least 5 and less then 15 characters";
     }
     this.setState({ errors });
     console.log(this.state);
@@ -361,9 +372,19 @@ class Form extends Component {
                       disabled={this.state.checkWifiSec}
                       className="uk-input"
                       type="text"
+                      name="securityKey"
+                      onChange={this.handleDataChange}
+                      value={this.state.securityKey}
                     />
                   </label>
                 </PanelInput>
+                {!!this.state.errors.securityKey ? (
+                  <ErrorSpan className="uk-text-danger">
+                    {this.state.errors.securityKey}
+                  </ErrorSpan>
+                ) : (
+                  <div />
+                )}
               </InputDiv>
 
               <RadioDivControls className="uk-form-controls uk-form-controls-text">
@@ -399,9 +420,19 @@ class Form extends Component {
                       disabled={this.state.checkWifiIp}
                       className="uk-input"
                       type="text"
+                      name="wifiIpAddress"
+                      value={this.state.WifiIpAddress}
+                      onChange={this.handleDataChange}
                     />
                   </label>
                 </PanelInput>
+                {!!this.state.errors.wifiIpAddress ? (
+                  <ErrorSpan className="uk-text-danger">
+                    {this.state.errors.wifiIpAddress}
+                  </ErrorSpan>
+                ) : (
+                  <div />
+                )}
                 <PanelInput>
                   <label className="uk-form-label">
                     Subnet Mask: *
