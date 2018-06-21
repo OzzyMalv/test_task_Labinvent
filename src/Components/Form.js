@@ -79,8 +79,12 @@ class Form extends Component {
       ipAddress: "",
       wifiIpAddress: "",
       subnetMask: "",
+      wifiSubnetMask: "",
       securityKey: "",
       defaultGateway: "",
+      wifiDefaultGateway: "",
+      ethernetDnsServ: "",
+      wifiDnsServ: "",
       checkEthernetIp: "disabled",
       checkEthernetDNS: "disabled",
       checkWifi: "disabled",
@@ -95,7 +99,6 @@ class Form extends Component {
   }
 
   checksFormState(ev) {
-    console.log(ev.target.value);
     if (ev.target.name === "enableWifi") {
       this.state.checkWifi === "disabled"
         ? this.setState({
@@ -111,7 +114,7 @@ class Form extends Component {
     if (ev.target.name === "checkWifiSec") {
       this.state.checkWifiSec === "disabled"
         ? this.setState({ checkWifiSec: "" })
-        : this.setState({ checkWifiSec: "disabled" });
+        : this.setState({ checkWifiSec: "disabled", securityKey: "" });
     }
     if (ev.target.value === "radioEthernetIpSET") {
       this.setState({ checkEthernetIp: "" });
@@ -129,20 +132,28 @@ class Form extends Component {
       this.setState({ checkEthernetDNS: "" });
     }
     if (ev.target.value === "radioEthernetDnsAUTO") {
-      this.setState({ checkEthernetDNS: "disable" });
+      this.setState({
+        checkEthernetDNS: "disable",
+        ethernetDnsServ: ""
+      });
     }
 
     if (ev.target.value === "radioWifiIpSET") {
       this.setState({ checkWifiIp: "" });
     }
     if (ev.target.value === "radioWifiIpAUTO") {
-      this.setState({ checkWifiIp: "disabled" });
+      this.setState({
+        checkWifiIp: "disabled",
+        wifiIpAddress: "",
+        wifiSubnetMask: "",
+        wifiDefaultGateway: ""
+      });
     }
     if (ev.target.value === "radioWifiDnsSET") {
       this.setState({ checkWifiDNS: "" });
     }
     if (ev.target.value === "radioWifiDnsAUTO") {
-      this.setState({ checkWifiDNS: "disabled" });
+      this.setState({ checkWifiDNS: "disabled", wifiDnsServ: "" });
     }
   }
 
@@ -165,27 +176,49 @@ class Form extends Component {
   handleSubmit(ev) {
     ev.preventDefault();
     let errors = {};
+    if (this.state.checkEthernetIp === "") {
+      if (this.state.ipAddress === "") {
+        errors.ipAddress = "Ip address can't be empty";
+      } else if (!isIpValid(this.state.ipAddress)) {
+        errors.ipAddress = "Ip address not correct";
+      }
+      if (this.state.subnetMask === "") {
+        errors.subnetMask = "Subnet mask can't be empty";
+      }
+    }
+    if (this.state.checkEthernetDNS === "") {
+      if (this.state.ethernetDnsServ === "") {
+        errors.ethernetDnsServ = "DNS server can't be empty";
+      }
+    }
+    if (this.state.checkWifiSec === "") {
+      if (this.state.securityKey === "") {
+        errors.securityKey = "Security key can't be empty";
+      } else if (
+        this.state.securityKey.length <= 5 ||
+        this.state.securityKey.length >= 15
+      ) {
+        errors.securityKey = "Must be at least 5 and less then 15 characters";
+      }
+    }
+    if (this.state.checkWifiIp === "") {
+      if (this.state.wifiIpAddress === "") {
+        errors.wifiIpAddress = "Ip address can't be empty";
+      } else if (!isIpValid(this.state.wifiIpAddress)) {
+        errors.wifiIpAddress = "Ip address not correct";
+      }
+      if (this.state.wifiSubnetMask === "") {
+        errors.wifiSubnetMask = "Subnet mask can't be empty";
+      }
+    }
 
-    if (this.state.ipAddress === "") {
-      errors.ipAddress = "Ip address can't be empty";
-    } else if (!isIpValid(this.state.ipAddress)) {
-      errors.ipAddress = "Ip address not correct";
+    if (this.state.checkWifiDNS === "") {
+      if (this.state.wifiDnsServ === "") {
+        errors.wifiDnsServ = "DNS server can't be empty";
+      }
     }
-    if (this.state.wifiIpAddress === "") {
-      errors.wifiIpAddress = "Ip address can't be empty";
-    } else if (!isIpValid(this.state.wifiIpAddress)) {
-      errors.wifiIpAddress = "Ip address not correct";
-    }
-    if (this.state.securityKey === "") {
-      errors.securityKey = "Security key can't be empty";
-    } else if (
-      this.state.securityKey.length <= 5 ||
-      this.state.securityKey.length >= 15
-    ) {
-      errors.securityKey = "Must be at least 5 and less then 15 characters";
-    }
+
     this.setState({ errors });
-    console.log(this.state);
     // ev.target.reset();
   }
 
@@ -255,6 +288,13 @@ class Form extends Component {
                     />
                   </label>
                 </PanelInput>
+                {!!this.state.errors.subnetMask ? (
+                  <ErrorSpan className="uk-text-danger">
+                    {this.state.errors.subnetMask}
+                  </ErrorSpan>
+                ) : (
+                  <div />
+                )}
                 <PanelInput>
                   <label className="uk-form-label">
                     Default Gateway:
@@ -302,9 +342,19 @@ class Form extends Component {
                       disabled={this.state.checkEthernetDNS}
                       className="uk-input"
                       type="text"
+                      name="ethernetDnsServ"
+                      value={this.state.ethernetDnsServ}
+                      onChange={this.handleDataChange}
                     />
                   </label>
                 </PanelInput>
+                {!!this.state.errors.ethernetDnsServ ? (
+                  <ErrorSpan className="uk-text-danger">
+                    {this.state.errors.ethernetDnsServ}
+                  </ErrorSpan>
+                ) : (
+                  <div />
+                )}
                 <PanelInput>
                   <label className="uk-form-label">
                     Alternative DNS server:
@@ -421,7 +471,7 @@ class Form extends Component {
                       className="uk-input"
                       type="text"
                       name="wifiIpAddress"
-                      value={this.state.WifiIpAddress}
+                      value={this.state.wifiIpAddress}
                       onChange={this.handleDataChange}
                     />
                   </label>
@@ -439,10 +489,20 @@ class Form extends Component {
                     <InputData
                       disabled={this.state.checkWifiIp}
                       className="uk-input"
+                      name="wifiSubnetMask"
                       type="text"
+                      value={this.state.wifiSubnetMask}
+                      onChange={this.handleDataChange}
                     />
                   </label>
                 </PanelInput>
+                {!!this.state.errors.wifiSubnetMask ? (
+                  <ErrorSpan className="uk-text-danger">
+                    {this.state.errors.wifiSubnetMask}
+                  </ErrorSpan>
+                ) : (
+                  <div />
+                )}
                 <PanelInput>
                   <label className="uk-form-label">
                     Default Gateway:
@@ -489,9 +549,19 @@ class Form extends Component {
                       disabled={this.state.checkWifiDNS}
                       className="uk-input"
                       type="text"
+                      name="wifiDnsServ"
+                      value={this.state.wifiDnsServ}
+                      onChange={this.handleDataChange}
                     />
                   </label>
                 </PanelInput>
+                {!!this.state.errors.wifiDnsServ ? (
+                  <ErrorSpan className="uk-text-danger">
+                    {this.state.errors.wifiDnsServ}
+                  </ErrorSpan>
+                ) : (
+                  <div />
+                )}
                 <PanelInput>
                   <label className="uk-form-label">
                     Alternative DNS server:

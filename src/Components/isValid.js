@@ -7,7 +7,7 @@ function isIpValid(str) {
 }
 
 function isDnsValid() {
-  var dn = "/^(?![0-9]+$)(?!-)[a-zA-Z0-9%-]{,63}(?<!-)$/i";
+  let dn = "/^(?![0-9]+$)(?!-)[a-zA-Z0-9%-]{,63}(?<!-)$/i";
 }
 
 export { isIpValid, isDnsValid };
